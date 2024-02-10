@@ -133,7 +133,7 @@ while not finish:
                 stripes[i][1] = -40 - stripe_height
 
         player.reset()
-        player.move_x()
+        # player.move_x()
         player.check_out_of_window()
 
         for i in range(car_count):
