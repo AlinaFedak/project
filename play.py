@@ -8,10 +8,10 @@ class Car(sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = player_x
         self.rect.y = player_y
-        self.player_dx = player_dx
-        self.player_dy = player_dy
         self.size_x = size_x
         self.size_y =  size_y
+        self.player_dx = player_dx
+        self.player_dy = player_dy
         self.color = color
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
@@ -38,6 +38,14 @@ class Car(sprite.Sprite):
         if self.rect.x+self.size_x > 400 or self.rect.x < 0:
             self.rect.x -= self.player_dx
 
+class PlayerCar(Car):
+    def update(self):
+        keys_pressed = key.get_pressed()
+        if keys_pressed[K_LEFT] and self.rect.x > 0:
+            self.rect.x -= 5
+        if keys_pressed[K_RIGHT] and self.rect.x < win_width - 70:
+            self.rect.x += 5
+
 
 def check_collision(player_x, player_y, player_width, player_height, car_x, car_y, car_width, car_height):
     if (player_x+player_width > car_x) and (player_x < car_x+car_width) and (player_y < car_y+car_height) and (player_y+player_height > car_y):
@@ -55,24 +63,25 @@ finish = False
 clock = time.Clock()
 FPS = 60
 
-player = Car('player.png', 175, 475, 70, 131)#, 0, 0 (255, 0, 0))
+player = PlayerCar('player.png', 175, 475, 70, 131)#, 0, 0 (255, 0, 0))
 
 collision = True
 
 score = 0
 
 font.init()
+font_70 = font.Font(None, 70)
 font_40 = font.Font(None, 40)
 font_30 = font.Font(None, 30)
-text_title = font_40.render("Ride the Road", True, (250, 105, 10))
-text_ins = font_30.render("Click to Play!", True, (250, 105, 10))
+text_title = font_70.render("Ride the Road", True, (250, 250, 0))
+text_ins = font_30.render("Натисни пробіл, щоб почати", True, (250, 40, 90))
 
 
 def draw_main_menu():
-    window.blit(text_title, [win_width / 2 - 106, win_height / 2 - 100])
-    score_text = font_40.render("Score: " + str(score), True, (250, 105, 10))
-    window.blit(score_text, [win_width / 2 - 70, win_height / 2 - 30])
-    window.blit(text_ins, [win_width / 2 - 85, win_height / 2 + 40])
+    window.blit(text_title, [win_width / 2 - 160, win_height / 2 - 110])
+    score_text = font_40.render("Рахунок: " + str(score), True, (250, 20, 40))
+    window.blit(score_text, [win_width / 2 - 80, win_height / 2 - 30])
+    window.blit(text_ins, [win_width / 2 - 110, win_height / 2 + 40])
     display.flip()
 
 cars = []
@@ -98,7 +107,8 @@ while not finish:
         if e.type == QUIT:
             finish = True
 
-        if collision:
+        keys_pressed = key.get_pressed()
+        if collision and keys_pressed[K_SPACE]:
             collision = False
             for i in range(car_count):
                 cars[i].rect.y = randint(-150, -51)
@@ -108,14 +118,14 @@ while not finish:
             score = 0
             # mouse.set_visible(False)
 
-        if not collision:
-            keys_pressed = key.get_pressed()
-            if keys_pressed[K_RIGHT] and player.rect.x < win_width-70:
-                player.rect.x += 4
-                # player.dx = 4
-            elif keys_pressed[K_LEFT] and player.rect.x > 0:
-                player.rect.x -= 4
-                # player.dx = -4
+        # if not collision:
+        #     keys_pressed = key.get_pressed()
+        #     if keys_pressed[K_RIGHT] and player.rect.x < win_width-70:
+        #         player.rect.x += 4
+        #         # player.dx = 4
+        #     elif keys_pressed[K_LEFT] and player.rect.x > 0:
+        #         player.rect.x -= 4
+        #         # player.dx = -4
 
             # if event.key == K_LEFT:
             #     player.dx = 0
@@ -123,8 +133,8 @@ while not finish:
             #     player.dx = 0
 
     window.fill((159, 163, 168))
-
-    if not collision:
+    # keys_pressed = key.get_pressed()
+    if not collision: # and keys_pressed[K_SPACE]:
         for i in range(stripe_count):
             draw.rect(window, (255, 255, 255), [stripes[i][0], stripes[i][1], stripe_width, stripe_height])
         for i in range(stripe_count):
@@ -133,6 +143,7 @@ while not finish:
                 stripes[i][1] = -40 - stripe_height
 
         player.reset()
+        player.update()
         # player.move_x()
         player.check_out_of_window()
 
@@ -151,7 +162,7 @@ while not finish:
                 # mouse.set_visible(True)
                 break
 
-        txt_score = font_30.render("Score: "+str(score), True, (255,255, 255))
+        txt_score = font_30.render("Рахунок: " + str(score), True, (255,255, 255))
         window.blit(txt_score, [15, 15])
 
         display.flip()
