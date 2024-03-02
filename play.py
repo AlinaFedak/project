@@ -81,7 +81,7 @@ def draw_main_menu():
     window.blit(text_title, [win_width / 2 - 160, win_height / 2 - 110])
     score_text = font_40.render("Рахунок: " + str(score), True, (250, 20, 40))
     window.blit(score_text, [win_width / 2 - 80, win_height / 2 - 30])
-    window.blit(text_ins, [win_width / 2 - 110, win_height / 2 + 40])
+    window.blit(text_ins, [win_width / 2 - 140, win_height / 2 + 40])
     display.flip()
 
 cars = []
